@@ -1,0 +1,19 @@
+{
+  "name": "toknize",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Fennec Studio",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.2.2"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.3.1",
+    "@types/jest": "^29.2.4",
+    "jest": "^29.3.1"
+  }
+}
