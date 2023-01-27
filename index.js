@@ -35,16 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var axios = require("axios");
-var API_URL = env('TOKNIZE_API_URL ', 'https://api.toknize.io');
-var API_KEY = env('TOKNIZE_API_KEY_ID ', '');
+var API_URL = process.env.TOKNIZE_API_URL || 'https://api.toknize.io';
+var API_KEY_ID = process.env.TOKNIZE_API_KEY_ID || '';
 module.exports.toknize = function (options) {
     if (options === void 0) { options = {}; }
     if (options.apiUrl)
         API_URL = options.apiUrl;
-    if (options.apiKey)
-        API_KEY = options.apiKey;
+    if (options.apiKeyId)
+        API_KEY_ID = options.apiKeyId;
     console.log('API_URL', API_URL);
-    console.log('API_KEY', API_KEY);
+    console.log('API_KEY', API_KEY_ID);
 };
 module.exports.createToken = function (props) {
     return __awaiter(this, void 0, void 0, function () {
@@ -178,7 +178,7 @@ function post(url, props) {
     });
 }
 function config() {
-    return { headers: { authorization: API_KEY } };
+    return { headers: { authorization: API_KEY_ID } };
 }
 function handleError(err) {
     console.error(err);
@@ -186,11 +186,4 @@ function handleError(err) {
         var data = ((err === null || err === void 0 ? void 0 : err.response) || {}).data;
         throw new Error(data);
     }
-}
-function env(name, def) {
-    if (!(process === null || process === void 0 ? void 0 : process.env))
-        return def;
-    return (process.env[name] ||
-        process.env["VUE_APP_".concat(name)] ||
-        def);
 }
