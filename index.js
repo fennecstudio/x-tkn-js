@@ -105,7 +105,7 @@ function del(url) {
                     return [4 /*yield*/, axios["delete"]("".concat(API_URL).concat(url), config())];
                 case 1:
                     data = (_a.sent()).data;
-                    return [2 /*return*/, data];
+                    return [2 /*return*/, sanitize(data)];
                 case 2:
                     err_1 = _a.sent();
                     handleError(err_1);
@@ -125,7 +125,7 @@ function get(url) {
                     return [4 /*yield*/, axios.get("".concat(API_URL).concat(url), config())];
                 case 1:
                     data = (_a.sent()).data;
-                    return [2 /*return*/, data];
+                    return [2 /*return*/, sanitize(data)];
                 case 2:
                     err_2 = _a.sent();
                     handleError(err_2);
@@ -145,7 +145,7 @@ function patch(url, props) {
                     return [4 /*yield*/, axios.patch("".concat(API_URL).concat(url), props, config())];
                 case 1:
                     data = (_a.sent()).data;
-                    return [2 /*return*/, data];
+                    return [2 /*return*/, sanitize(data)];
                 case 2:
                     err_3 = _a.sent();
                     handleError(err_3);
@@ -165,7 +165,7 @@ function post(url, props) {
                     return [4 /*yield*/, axios.post("".concat(API_URL).concat(url), props, config())];
                 case 1:
                     data = (_a.sent()).data;
-                    return [2 /*return*/, data];
+                    return [2 /*return*/, sanitize(data)];
                 case 2:
                     err_4 = _a.sent();
                     handleError(err_4);
@@ -174,6 +174,11 @@ function post(url, props) {
             }
         });
     });
+}
+function sanitize(data) {
+    if (!data)
+        return null;
+    return data;
 }
 function config() {
     return { headers: { authorization: API_KEY_ID } };
