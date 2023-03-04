@@ -1,8 +1,9 @@
 {
   "name": "toknize",
-  "version": "1.1.9",
-  "description": "",
+  "version": "1.2.0",
+  "description": "JavaScript SDK for the Toknize API.  For more information, visit https://toknize.io",
   "main": "index.js",
+  "types": "index.d.ts",
   "author": "Fennec Studio",
   "license": "MIT",
   "dependencies": {
