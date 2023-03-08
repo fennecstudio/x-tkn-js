@@ -84,4 +84,3 @@ let token = await revokeToken('some-token-id')
 ```
 
 
-
