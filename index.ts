@@ -1,35 +1,36 @@
-let axios = require("axios");
+import axios from "axios";
+import {IToknizeOptions} from "./types";
 
 let API_URL = process.env.TOKNIZE_API_URL || process.env.REACT_APP_TOKNIZE_API_URL || process.env.VUE_APP_TOKNIZE_API_URL || 'https://api.toknize.io'
 let API_KEY_ID = process.env.TOKNIZE_API_KEY_ID || process.env.REACT_APP_TOKNIZE_API_KEY_ID || process.env.VUE_APP_TOKNIZE_API_KEY_ID || ''
 
-module.exports.toknize = function (options: IToknizeOptions = {}) {
+export async function toknize (options: IToknizeOptions = {}) {
 
     if (options.apiUrl) API_URL = options.apiUrl;
     if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
 }
 
-module.exports.createToken = async function (props: unknown) {
+export async function createToken(props: unknown) {
 
     return await post(`/tokens/create`, props)
 }
 
-module.exports.deleteToken = async function (tokenId: string) {
+export async function deleteToken(tokenId: string) {
 
     return await del(`/tokens/${tokenId}`)
 }
 
-module.exports.readToken = async function (tokenId: string) {
+export async function readToken(tokenId: string) {
 
     return await get(`/tokens/${tokenId}/read`)
 }
 
-module.exports.redeemToken = async function (tokenId: string) {
+export async function redeemToken(tokenId: string) {
 
     return await patch(`/tokens/${tokenId}/redeem`)
 }
 
-module.exports.revokeToken = async function (tokenId: string) {
+export async function revokeToken(tokenId: string) {
 
     return await patch(`/tokens/${tokenId}/revoke`)
 }
@@ -106,7 +107,3 @@ function handleError(err: any) {
     }
 }
 
-interface IToknizeOptions {
-    apiKeyId?: string,
-    apiUrl?: string,
-}
