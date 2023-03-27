@@ -1,19 +1,22 @@
 import path from 'path'
 require('dotenv').config({path:path.resolve(process.cwd(), '.env')})
 import {describe} from "@jest/globals";
-import {createToken, deleteToken, readToken, redeemToken, revokeToken} from 'toknize'
+import {createToken, deleteToken, readToken, redeemToken, revokeToken} from 'x-tkn'
 // import {createToken, deleteToken, readToken, redeemToken, revokeToken} from '../../dist'
 
 describe('sdk', () => {
 
-    it('should create token', async () => {
+    describe('createToken', () => {
 
-        const token = await createToken({
-            type: 'test',
+        it('should create token', async () => {
+
+            const token = await createToken({
+                type: 'test',
+            });
+
+            expect(token).toBeTruthy();
         });
-
-        expect(token).toBeTruthy();
-    });
+    })
 
     it('should read token', async () => {
 

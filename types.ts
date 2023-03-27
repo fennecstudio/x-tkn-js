@@ -1,4 +1,4 @@
-export interface IToknizeOptions {
+export interface ISetupOptions {
     apiKeyId?: string,
     apiUrl?: string,
 }

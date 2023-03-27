@@ -1,10 +1,10 @@
 import axios from "axios";
-import {IToknizeOptions} from "./types";
+import {ISetupOptions} from "./types";
 
-let API_URL = process.env.TOKNIZE_API_URL || process.env.REACT_APP_TOKNIZE_API_URL || process.env.VUE_APP_TOKNIZE_API_URL || 'https://api.toknize.io'
-let API_KEY_ID = process.env.TOKNIZE_API_KEY_ID || process.env.REACT_APP_TOKNIZE_API_KEY_ID || process.env.VUE_APP_TOKNIZE_API_KEY_ID || ''
+let API_URL =  'https://api.x-tkn.com'
+let API_KEY_ID = process.env.X_TKN_API_KEY_ID || process.env.REACT_APP_X_TKN_API_KEY_ID || process.env.VUE_APP_X_TKN_API_KEY_ID || ''
 
-export async function toknize (options: IToknizeOptions = {}) {
+export async function setup (options: ISetupOptions = {}) {
 
     if (options.apiUrl) API_URL = options.apiUrl;
     if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
