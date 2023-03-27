@@ -1,5 +1,5 @@
 import path from 'path'
-require('dotenv').config({path:path.resolve(process.cwd(), 'tests/.env')})
+require('dotenv').config({path:path.resolve(process.cwd(), '__tests__/.env')})
 
 import {createSecurityToken, createToken, setup, readToken, redeemToken, revokeToken, deleteToken} from "../index";
 
@@ -45,10 +45,10 @@ describe('JS SDK', function () {
 
         let source = await createToken({type: 'test'})
 
-        let token = await readToken(source.id);
+        let token = await readToken(source!.id);
 
         expect(token).toBeTruthy()
-        expect(token.id).toEqual(source.id)
+        expect(token?.id).toEqual(source.id)
     })
 
     test('should receive null reading a token that doesn\'t exist', async function () {
@@ -73,8 +73,8 @@ describe('JS SDK', function () {
         let token = await redeemToken(source.id);
 
         expect(token).toBeTruthy()
-        expect(token.id).toEqual(source.id)
-        expect(token.uses).toEqual(2)
+        expect(token?.id).toEqual(source.id)
+        expect(token?.uses).toEqual(2)
     })
 
     test('should receive null when token has been already been redeemed', async function () {
@@ -108,8 +108,8 @@ describe('JS SDK', function () {
         let token = await revokeToken(source.id);
 
         expect(token).toBeTruthy()
-        expect(token.id).toEqual(source.id)
-        expect(token.isRevoked).toBeTruthy()
+        expect(token?.id).toEqual(source.id)
+        expect(token?.isRevoked).toBeTruthy()
     })
 
     test('should receive null when revoking a token that doesn\'t exist', async function () {

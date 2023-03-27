@@ -4,11 +4,11 @@ export interface ISetupOptions {
 }
 
 export interface IToken {
-    id?: string
+    id: string
     type?: string,
     //group?:string,
     refId?: string,
-    payload?: string
+    payload?: string | object
     uses?: number
     maxUses?: number
     expiresAt?: Date
@@ -19,4 +19,14 @@ export interface IToken {
     accountId?: string
     createdAt?: Date
     modifiedAt?: Date
+}
+
+export interface ITokenInput {
+    type: string,
+    accountId?: string
+    refId?: string,
+    payload?: string | object
+    uses?: number
+    maxUses?: number
+    expiresAt?: Date
 }

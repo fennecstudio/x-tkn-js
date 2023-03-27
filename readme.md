@@ -4,12 +4,18 @@ x-tkn is an API that provides Stateful Web Tokens.
 
 An API Key is required and can be obtained at https://x-tkn.com by signing up for a free account.
 
-## Installation
+# Installation
+
+---
+
 ```js
 npm install x-tkn --save
 ```
 
-## Setup
+# Setup
+
+---
+
 The Toknize SDK needs your API Key in order to authenticate correctly.
 This can be done in one of two ways
 #### Environment Variable
@@ -23,13 +29,101 @@ import {setup} from 'x-tkn'
 setup({apiKeyId: YOUR_API_KEY})
 ```
 
-## The Token Object
+# The Token Object
+
+---
+
+- `id`: string -
+The unique identifier for the token.
+
+
+- `type`: string -
+The type of the token, which can be used to classify tokens for different purposes.
+
+
+- `refId`: string -
+A reference identifier for the token, which can be used to associate the token with a specific entity, such as a user.
+
+
+- `payload`: boolean -
+The payload of the token, which can be a string or an object. This can be used to store additional information related to the token, such as user details or permissions.
+
+
+- `uses`: number -
+The number of times the token has been used.
+
+
+- `maxUses`: number -
+The maximum number of times the token can be used before it becomes invalid.
+
+
+- `expiresAt`: Date -
+The date and time when the token expires. After this time, the token is no longer valid.
+
+
+- `isRevoked`: boolean -
+Indicates if the token has been revoked. If true, the token is no longer valid, even if it has not expired.
+
+
+- `isEncrypted`: boolean -
+Indicates if the token is encrypted at rest.
+
+
+- `isActive`: boolean -
+Indicates if the token is active, which means it has not been revoked, has not expired and has not reached it's maximum uses.
+
+
+- `isExpired`: boolean -
+Indicates if the token is expired. If true, the token is no longer valid, even if it has not been revoked.
+
+
+- `accountId`: string -
+The unique identifier of the account associated with the token. This can be used to link the token to a specific user, organization, or other entity within the application.
+
+
+- `createdAt`: Date -
+The date and time when the token was created. This can be used for auditing purposes or to determine the age of the token.
+
+
+- `modifiedAt`: Date -
+The date and time when the token was last modified. This can be used for auditing purposes or to track changes to the token's properties.
 
 
 
-## SDK Methods
+# SDK Methods
 
-### createToken(data)
+---
+
+
+
+## createToken(data)
+
+**PARAMETERS**
+
+- `type`: string - The type of the token, which can be used to classify tokens for different purposes
+
+
+- `refId`: string - Optional. A reference identifier for the token, which can be used to associate the token with a specific entity, such as a user.
+
+
+- `payload`: boolean - Optional. The payload of the token, which can be a string or an object. This can be used to store additional information related to the token, such as user details or permissions.
+
+
+- `uses`: number - Optional. The number of times the token has been used.
+
+
+- `maxUses`: number - Optional. The maximum number of times the token can be used before it becomes invalid.
+
+
+- `expiresAt`: Date - Optional. The date and time when the token expires. After this time, the token is no longer valid.
+
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
+
 ```js
 import {createToken} from 'x-tkn'
 
@@ -47,10 +141,27 @@ let token = await createToken(data)
 
 ```
 
-### createSecurityToken(data)
-A security token is a specific token that is assigned to user (or other object), can only be redeemed once and has a configurable expiration date.
-- *refId*: string - The id of the user or other object that the token is assigned to
-- *ttl*: {days: number, hours: number, minutes: number, seconds: number} - The time to live of the token. If not provided, the token will never expire.
+
+
+## createSecurityToken(refId, ttl)
+
+A security token is a specific token that is assigned to user (or other object), can only be redeemed once and 
+has a configurable expiration date.
+
+**PARAMETERS**
+
+- `refId`: string -
+The id of the user or other object that the token is assigned to
+
+
+- `ttl` {days: number, hours: number, minutes: number, seconds: number} -
+The time to live of the token. If not provided, the token will never expire.
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
 
 ```js
 import {createSecurityToken} from 'x-tkn'
@@ -59,39 +170,98 @@ let refId = "some-user-id"
 let ttl = {days: 1}
 
 let token = await createSecurityToken(refId, ttl)
-
 ```
 
-### deleteToken(tokenId)
+
+
+## deleteToken(tokenId)
+
+**PARAMETERS**
+
+- `tokenId`: string -
+  The unique identifier of the token to delete
+
+**RETURNS**
+
+void
+
+**EXAMPLE**
+
 ```js
 import {deleteToken} from 'x-tkn'
 
 await deleteToken('some-token-id')
-
 ```
 
-### readToken(tokenId)
+
+
+## readToken(tokenId)
+The `readToken` method returns a `token` object for the specified token id.  
+- If the token has limited uses, this method will NOT increment the token's use count.
+
+**PARAMETERS**
+
+- `tokenId`: string -
+  The unique identifier of the token to delete
+
+**RETURNS**
+
+A 'token' object
+
+**EXAMPLE**
+
 ```js
 import {readToken} from 'x-tkn'
 
 let token = await readToken('some-token-id')
-
 ```
 
-### redeemToken(tokenId)
+
+
+## redeemToken(tokenId)
+The `redeemToken` method returns a `token` object for the specified token id and is used for limited use tokens.
+Calling this method will increment the token's `use` count.
+- If the token is expired, it will return `null`.
+- If the token has reached it's maximum uses, it will return `null`.
+- If the token has been revoked, it will return `null`.
+
+**PARAMETERS**
+
+- `tokenId`: string -
+  The unique identifier of the token to delete
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
+
 ```js
 import {redeemToken} from 'x-tkn'
 
 let token = await redeemToken('some-token-id')
-
 ```
 
-### revokeToken(tokenId)
+
+
+## revokeToken(tokenId)
+The `revokeToken` method explicity revokes a token ensuring that any future attempts to redeem it will fail.
+
+**PARAMETERS**
+
+`tokenId`: string -
+The unique identifier of the token to delete
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
+
 ```js
 import {revokeToken} from 'x-tkn'
 
 let token = await revokeToken('some-token-id')
-
 ```
 
 

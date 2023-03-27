@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ISetupOptions} from "./types";
+import {ISetupOptions, IToken, ITokenInput} from "./types";
 
 let API_URL = 'https://api.x-tkn.com'
 let API_KEY_ID = process.env.X_TKN_API_KEY_ID || process.env.REACT_APP_X_TKN_API_KEY_ID || process.env.VUE_APP_X_TKN_API_KEY_ID || ''
@@ -10,12 +10,12 @@ export async function setup(options: ISetupOptions = {}) {
     if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
 }
 
-export async function createToken(props?: unknown) {
+export async function createToken(props?: ITokenInput): Promise<IToken> {
 
     return await post(`/tokens/create`, props)
 }
 
-export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}) {
+export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}): Promise<IToken> {
 
     let props = {
         type: 'security',
@@ -27,22 +27,22 @@ export async function createSecurityToken(refId?: string, ttl: any = {hours: 2})
     return await post(`/tokens/create`, props)
 }
 
-export async function deleteToken(tokenId: string) {
+export async function deleteToken(tokenId: string): Promise<void> {
 
-    return await del(`/tokens/${tokenId}`)
+    await del(`/tokens/${tokenId}`)
 }
 
-export async function readToken(tokenId: string) {
+export async function readToken(tokenId: string): Promise<IToken | null> {
 
     return await get(`/tokens/${tokenId}/read`)
 }
 
-export async function redeemToken(tokenId: string) {
+export async function redeemToken(tokenId: string): Promise<IToken | null> {
 
     return await patch(`/tokens/${tokenId}/redeem`)
 }
 
-export async function revokeToken(tokenId: string) {
+export async function revokeToken(tokenId: string): Promise<IToken | null> {
 
     return await patch(`/tokens/${tokenId}/revoke`)
 }
@@ -104,8 +104,6 @@ function sanitize(data?: any) {
 }
 
 function config() {
-
-    console.log('API_KEY_ID', API_KEY_ID)
 
     return {headers: {authorization: API_KEY_ID}}
 }

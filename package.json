@@ -1,13 +1,11 @@
 {
   "name": "x-tkn",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "SDK for the x-tkn API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "prepare": "npm run build",
     "deploy": "npm run build && npm publish"
   },
   "files": [
