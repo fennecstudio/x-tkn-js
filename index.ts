@@ -1,16 +1,28 @@
 import axios from "axios";
 import {ISetupOptions} from "./types";
 
-let API_URL =  'https://api.x-tkn.com'
+let API_URL = 'https://api.x-tkn.com'
 let API_KEY_ID = process.env.X_TKN_API_KEY_ID || process.env.REACT_APP_X_TKN_API_KEY_ID || process.env.VUE_APP_X_TKN_API_KEY_ID || ''
 
-export async function setup (options: ISetupOptions = {}) {
+export async function setup(options: ISetupOptions = {}) {
 
     if (options.apiUrl) API_URL = options.apiUrl;
     if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
 }
 
-export async function createToken(props: unknown) {
+export async function createToken(props?: unknown) {
+
+    return await post(`/tokens/create`, props)
+}
+
+export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}) {
+
+    let props = {
+        type: 'security',
+        refId,
+        expiresAt: addToDate(ttl),
+        maxUses: 1
+    }
 
     return await post(`/tokens/create`, props)
 }
@@ -87,17 +99,18 @@ async function post(url: string, props?: unknown) {
 
 function sanitize(data?: any) {
 
-    if(!data) return null;
+    if (!data) return null;
     return data;
 }
 
 function config() {
+
+    console.log('API_KEY_ID', API_KEY_ID)
+
     return {headers: {authorization: API_KEY_ID}}
 }
 
 function handleError(err: any) {
-
-    console.error(err)
 
     if (err?.response) {
 
@@ -107,3 +120,25 @@ function handleError(err: any) {
     }
 }
 
+function addToDate(obj: any) {
+
+    const currentDate = new Date();
+
+    if (!obj) return new Date();
+
+    const updatedDate = new Date(currentDate);
+
+    if ('hours' in obj) {
+        updatedDate.setHours(currentDate.getHours() + obj.hours);
+    }
+
+    if ('minutes' in obj) {
+        updatedDate.setMinutes(currentDate.getMinutes() + obj.minutes);
+    }
+
+    if ('days' in obj) {
+        updatedDate.setDate(currentDate.getDate() + obj.days);
+    }
+
+    return updatedDate;
+}

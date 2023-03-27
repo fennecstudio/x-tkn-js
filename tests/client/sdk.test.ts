@@ -1,22 +1,30 @@
 import path from 'path'
-require('dotenv').config({path:path.resolve(process.cwd(), '.env')})
+
+require('dotenv').config({path: path.resolve(process.cwd(), '../.env')})
 import {describe} from "@jest/globals";
-import {createToken, deleteToken, readToken, redeemToken, revokeToken} from 'x-tkn'
-// import {createToken, deleteToken, readToken, redeemToken, revokeToken} from '../../dist'
+import {createToken, createSecurityToken, deleteToken, readToken, redeemToken, revokeToken} from 'x-tkn'
+// import {createToken, createSecurityToken, deleteToken, readToken, redeemToken, revokeToken} from '../../dist'
 
 describe('sdk', () => {
 
-    describe('createToken', () => {
+    it('should create token', async () => {
 
-        it('should create token', async () => {
-
-            const token = await createToken({
-                type: 'test',
-            });
-
-            expect(token).toBeTruthy();
+        const token = await createToken({
+            type: 'test',
         });
-    })
+
+        expect(token).toBeTruthy();
+    });
+
+    it('should create security token', async () => {
+
+        let refId = 'some-user-id';
+        let ttl = {hours: 2}
+
+        const token = await createSecurityToken(refId, ttl);
+
+        expect(token).toBeTruthy();
+    });
 
     it('should read token', async () => {
 

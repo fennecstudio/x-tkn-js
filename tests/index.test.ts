@@ -1,10 +1,9 @@
-const {createToken, toknize, readToken, redeemToken, revokeToken, deleteToken} = require("../index");
+import path from 'path'
+require('dotenv').config({path:path.resolve(process.cwd(), 'tests/.env')})
+
+import {createSecurityToken, createToken, setup, readToken, redeemToken, revokeToken, deleteToken} from "../index";
 
 describe('JS SDK', function () {
-
-    const apiKeyId = '45c6ca1a79414b97874caac58088e5ffa917efa2af26453ba796fade85f92585fd0f64bc063c4a9eb0156f4c8dc81ac40325466e467845a18d19e68bb64a81c7'
-
-    toknize({apiKeyId})
 
     test('should create token', async function () {
 
@@ -31,6 +30,17 @@ describe('JS SDK', function () {
         }
     })
 
+    test('should create security token', async function () {
+
+        let refId = 'some-user-id';
+        let ttl = {hours: 2}
+
+        let token = await createSecurityToken(refId, ttl)
+
+        expect(token).toBeTruthy()
+        expect(token!.refId).toBe(refId)
+    })
+
     test('should read token', async function () {
 
         let source = await createToken({type: 'test'})
@@ -50,6 +60,7 @@ describe('JS SDK', function () {
 
     test('should receive null reading a token with missing id', async function () {
 
+        // @ts-ignore
         let token = await readToken();
 
         expect(token).toBeNull()
@@ -84,6 +95,7 @@ describe('JS SDK', function () {
 
     test('should receive null redeeming a token with missing id', async function () {
 
+        // @ts-ignore
         let token = await redeemToken()
 
         expect(token).toBe(null)
@@ -109,6 +121,7 @@ describe('JS SDK', function () {
 
     test('should receive null when redeeming a token with missing id', async function () {
 
+        // @ts-ignore
         let token = await revokeToken()
 
         expect(token).toBe(null)
