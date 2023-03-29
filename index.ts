@@ -32,6 +32,13 @@ export async function deleteToken(tokenId: string): Promise<void> {
     await del(`/tokens/${tokenId}`)
 }
 
+export async function listTokens(where?: any, orderBy?: any, skip?: number, take?: number): Promise<any | null> {
+
+    let data = {where, orderBy, skip, take}
+
+    return await post(`/tokens/list`, data)
+}
+
 export async function readToken(tokenId: string): Promise<IToken | null> {
 
     return await get(`/tokens/${tokenId}/read`)
