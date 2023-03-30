@@ -1,146 +1,280 @@
 import path from 'path'
-require('dotenv').config({path:path.resolve(process.cwd(), '__tests__/.env')})
 
-import {createSecurityToken, createToken, setup, readToken, redeemToken, revokeToken, deleteToken} from "../index";
+require('dotenv').config({path: path.resolve(process.cwd(), '__tests__/.env')})
+
+import {
+    createSecurityToken,
+    createToken,
+    deleteToken,
+    extendExpiration,
+    listTokens,
+    readToken,
+    redeemToken,
+    revokeToken,
+    updateToken,
+} from "../index";
 
 describe('JS SDK', function () {
 
-    test('should create token', async function () {
+    describe('createToken', function () {
 
-        let token = await createToken({type: 'test'})
+        test('should create token', async function () {
 
-        expect(token).toBeTruthy()
+            let token = await createToken({type: 'test'})
+
+            expect(token).toBeTruthy()
+        })
+
+        test('should create token with json payload', async function () {
+
+            let token = await createToken({type: 'test', payload: {hello: 'world'}})
+
+            expect(token).toBeTruthy()
+        })
+
+        test('should receive null when creating a token with no properties', async function () {
+            try {
+                let token = await createToken()
+
+                expect(token).toBeFalsy()
+            } catch (err: any) {
+
+                expect(err.message).toBe('Missing or invalid token fields')
+            }
+        })
     })
 
-    test('should create token with json payload', async function () {
+    describe('createSecurity', function () {
 
-        let token = await createToken({type: 'test', payload: {hello: 'world'}})
+        test('should create security token', async function () {
 
-        expect(token).toBeTruthy()
+            let refId = 'some-user-id';
+            let ttl = {hours: 2}
+
+            let token = await createSecurityToken(refId, ttl)
+
+            expect(token).toBeTruthy()
+            expect(token!.refId).toBe(refId)
+        })
     })
 
-    test('should receive null when creating a token with no properties', async function () {
-        try {
-            let token = await createToken()
+    describe('listTokens', function () {
 
-            expect(token).toBeFalsy()
-        } catch (err: any) {
+        test('should list tokens', async function () {
 
-            expect(err.message).toBe('Missing or invalid token fields')
-        }
+            await createToken({type: 'test', refId: 'some-user-id-1'})
+            await createToken({type: 'test', refId: 'some-user-id-0'})
+
+            let {tokens, count} = await listTokens()
+
+            expect(tokens).toBeTruthy()
+            expect(tokens.length).toBeGreaterThanOrEqual(2)
+            expect(count).toBeGreaterThanOrEqual(2)
+        })
+
+        test('should list token with parameters', async function () {
+
+            let now = (new Date()).getTime();
+            let refId = 'some-user-id-' + now
+
+            await createToken({type: 'test', refId})
+            await createToken({type: 'test', refId})
+
+            let {tokens, count} = await listTokens({refId}, {createdAt: 'desc'}, 0, 10)
+
+            expect(tokens).toBeTruthy()
+            expect(tokens.length).toBe(2)
+            expect(count).toBe(2)
+        })
     })
 
-    test('should create security token', async function () {
+    describe('readToken', function () {
 
-        let refId = 'some-user-id';
-        let ttl = {hours: 2}
+        test('should read token', async function () {
 
-        let token = await createSecurityToken(refId, ttl)
+            let source = await createToken({type: 'test'})
 
-        expect(token).toBeTruthy()
-        expect(token!.refId).toBe(refId)
+            let token = await readToken(source!.id);
+
+            expect(token).toBeTruthy()
+            expect(token?.id).toEqual(source.id)
+        })
+
+        test('should receive null reading a token that doesn\'t exist', async function () {
+
+            let token = await readToken('not-an-id');
+
+            expect(token).toBeNull()
+        })
+
+        test('should receive null reading a token with missing id', async function () {
+
+            // @ts-ignore
+            let token = await readToken();
+
+            expect(token).toBeNull()
+        })
     })
 
-    test('should read token', async function () {
+    describe('redeemToken', function () {
 
-        let source = await createToken({type: 'test'})
+        test('should redeem token', async function () {
 
-        let token = await readToken(source!.id);
+            let source = await createToken({type: 'test', maxUses: 10})
 
-        expect(token).toBeTruthy()
-        expect(token?.id).toEqual(source.id)
+            let token = await redeemToken(source.id);
+
+            expect(token).toBeTruthy()
+            expect(token?.id).toEqual(source.id)
+            expect(token?.uses).toEqual(1)
+        })
+
+        test('should receive null when token has been already been redeemed', async function () {
+
+            let source = await createToken({type: 'test', maxUses: 1})
+
+            await redeemToken(source.id)
+            let token = await redeemToken(source.id);
+
+            expect(token).toBeNull()
+        })
+
+        test('should receive null redeeming a token that doesn\'t exist', async function () {
+
+            let token = await redeemToken('not-an-id')
+
+            expect(token).toBe(null)
+        })
+
+        test('should receive null redeeming a token with missing id', async function () {
+
+            // @ts-ignore
+            let token = await redeemToken()
+
+            expect(token).toBe(null)
+        })
     })
 
-    test('should receive null reading a token that doesn\'t exist', async function () {
+    describe('revokeToken', function () {
 
-        let token = await readToken('not-an-id');
+        test('should revoke token', async function () {
 
-        expect(token).toBeNull()
+            let source = await createToken({type: 'test'})
+
+            let token = await revokeToken(source.id);
+
+            expect(token).toBeTruthy()
+            expect(token?.id).toEqual(source.id)
+            expect(token?.isRevoked).toBeTruthy()
+        })
+
+        test('should receive null when revoking a token that doesn\'t exist', async function () {
+
+            let token = await revokeToken('not-an-id')
+
+            expect(token).toBe(null)
+        })
+
+        test('should receive null when redeeming a token with missing id', async function () {
+
+            // @ts-ignore
+            let token = await revokeToken()
+
+            expect(token).toBe(null)
+        })
     })
 
-    test('should receive null reading a token with missing id', async function () {
+    describe('deleteToken', function () {
 
-        // @ts-ignore
-        let token = await readToken();
+        test('should delete token', async function () {
 
-        expect(token).toBeNull()
+            let source = await createToken({type: 'test'})
+
+            await deleteToken(source.id);
+
+            expect(true).toBeTruthy()
+        })
+
+        test('should fail silently when deleting a token that doesn\'t exist', async function () {
+
+            await deleteToken('not-an-id')
+
+            expect(true).toBeTruthy()
+        })
     })
 
-    test('should redeem token', async function () {
+    describe('updateToken', function () {
 
-        let source = await createToken({type: 'test', uses: 1, maxUses: 10})
+        test('should update a tokens type', async function () {
 
-        let token = await redeemToken(source.id);
+            let token = await createToken({type: 'test'})
 
-        expect(token).toBeTruthy()
-        expect(token?.id).toEqual(source.id)
-        expect(token?.uses).toEqual(2)
+            let updated = await updateToken(token.id, {type: 'test2'})
+
+            expect(token).toBeTruthy()
+            expect(updated).toBeTruthy()
+            expect(updated?.type).toBe('test2')
+        })
+
+        test('should update a tokens maxUses', async function () {
+
+            let token = await createToken({type: 'test', maxUses: 10})
+
+            let updated = await updateToken(token.id, {maxUses: 100})
+
+            expect(token).toBeTruthy()
+            expect(updated).toBeTruthy()
+            expect(updated?.maxUses).toBe(100)
+        })
+
+        test('should update a tokens refId', async function () {
+
+            let token = await createToken({type: 'test', refId: 'hello'})
+
+            let updated = await updateToken(token.id, {refId: 'world'})
+
+            expect(token).toBeTruthy()
+            expect(updated).toBeTruthy()
+            expect(updated?.refId).toBe('world')
+        })
+
+        test('should update a tokens payload', async function () {
+
+            let token = await createToken({type: 'test', payload: {hello: 'world'}})
+
+            let payload = {foo: 'bar'}
+            let updated = await updateToken(token.id, {payload})
+
+            expect(token).toBeTruthy()
+            expect(updated).toBeTruthy()
+            expect(updated?.payload).toEqual(payload)
+        })
+
+        test('should update a tokens expiration', async function () {
+
+            let token = await createToken({type: 'test', expiresAt: new Date()})
+
+            let expiresAt = new Date('2040-01-01')
+            let updated = await updateToken(token.id, {expiresAt})
+
+            expect(token).toBeTruthy()
+            expect(updated).toBeTruthy()
+            expect(updated?.expiresAt).toEqual(expiresAt.toISOString())
+        })
     })
 
-    test('should receive null when token has been already been redeemed', async function () {
+    describe('extendExpiration', function () {
 
-        let source = await createToken({type: 'test', uses: 10, maxUses: 10})
+        test('should extend the expiration date of a token', async function () {
 
-        let token = await redeemToken(source.id);
+            let token = await createToken({type: 'test', expiresAt: new Date()})
 
-        expect(token).toBeNull()
+            let updated = await extendExpiration(token.id, {days: 1})
+
+            expect(token).toBeTruthy()
+            expect(updated).toBeTruthy()
+            // @ts-ignore
+            expect(updated?.expiresAt > token?.expiresAt).toBe(true)
+        })
     })
-
-    test('should receive null redeeming a token that doesn\'t exist', async function () {
-
-        let token = await redeemToken('not-an-id')
-
-        expect(token).toBe(null)
-    })
-
-    test('should receive null redeeming a token with missing id', async function () {
-
-        // @ts-ignore
-        let token = await redeemToken()
-
-        expect(token).toBe(null)
-    })
-
-    test('should revoke token', async function () {
-
-        let source = await createToken({type: 'test'})
-
-        let token = await revokeToken(source.id);
-
-        expect(token).toBeTruthy()
-        expect(token?.id).toEqual(source.id)
-        expect(token?.isRevoked).toBeTruthy()
-    })
-
-    test('should receive null when revoking a token that doesn\'t exist', async function () {
-
-        let token = await revokeToken('not-an-id')
-
-        expect(token).toBe(null)
-    })
-
-    test('should receive null when redeeming a token with missing id', async function () {
-
-        // @ts-ignore
-        let token = await revokeToken()
-
-        expect(token).toBe(null)
-    })
-
-    test('should delete token', async function () {
-
-        let source = await createToken({type: 'test'})
-
-        await deleteToken(source.id);
-
-        expect(true).toBeTruthy()
-    })
-
-    test('should fail silently when deleting a token that doesn\'t exist', async function () {
-
-        await deleteToken('not-an-id')
-
-        expect(true).toBeTruthy()
-    })
-
 })

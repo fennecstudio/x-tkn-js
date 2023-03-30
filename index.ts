@@ -2,17 +2,12 @@ import axios from "axios";
 import {ISetupOptions, IToken, ITokenInput} from "./types";
 
 let API_URL = 'https://api.x-tkn.com'
-let API_KEY_ID = process.env.X_TKN_API_KEY_ID || process.env.REACT_APP_X_TKN_API_KEY_ID || process.env.VUE_APP_X_TKN_API_KEY_ID || ''
+let API_KEY_ID = findApiKey()
 
 export async function setup(options: ISetupOptions = {}) {
 
     if (options.apiUrl) API_URL = options.apiUrl;
     if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
-}
-
-export async function createToken(props?: ITokenInput): Promise<IToken> {
-
-    return await post(`/tokens/create`, props)
 }
 
 export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}): Promise<IToken> {
@@ -27,9 +22,21 @@ export async function createSecurityToken(refId?: string, ttl: any = {hours: 2})
     return await post(`/tokens/create`, props)
 }
 
+export async function createToken(props?: ITokenInput): Promise<IToken> {
+
+    return await post(`/tokens/create`, props)
+}
+
 export async function deleteToken(tokenId: string): Promise<void> {
 
     await del(`/tokens/${tokenId}`)
+}
+
+export async function extendExpiration(tokenId: string, ttl: any = {hours: 1}): Promise<any | null> {
+
+    let updates = {expiresAt: addToDate(ttl)}
+
+    return updateToken(tokenId, updates)
 }
 
 export async function listTokens(where?: any, orderBy?: any, skip?: number, take?: number): Promise<any | null> {
@@ -52,6 +59,20 @@ export async function redeemToken(tokenId: string): Promise<IToken | null> {
 export async function revokeToken(tokenId: string): Promise<IToken | null> {
 
     return await patch(`/tokens/${tokenId}/revoke`)
+}
+
+/*
+export async function revokeTokens(where: any): Promise<any | null> {
+
+    if (!where) return []
+
+    return await post(`/tokens/revoke`, where)
+}
+*/
+
+export async function updateToken(tokenId: string, updates = {}): Promise<any | null> {
+
+    return await patch(`/tokens/${tokenId}/update`, updates)
 }
 
 // helpers
@@ -146,4 +167,14 @@ function addToDate(obj: any) {
     }
 
     return updatedDate;
+}
+
+function findApiKey() {
+
+    return (
+        process.env.X_TKN_API_KEY_ID ||
+        process.env.REACT_APP_X_TKN_API_KEY_ID ||
+        process.env.VUE_APP_X_TKN_API_KEY_ID ||
+        ''
+    )
 }

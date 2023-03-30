@@ -26,7 +26,6 @@ export interface ITokenInput {
     accountId?: string
     refId?: string,
     payload?: string | object
-    uses?: number
     maxUses?: number
     expiresAt?: Date
 }
