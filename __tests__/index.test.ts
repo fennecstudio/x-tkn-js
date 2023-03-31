@@ -3,15 +3,8 @@ import path from 'path'
 require('dotenv').config({path: path.resolve(process.cwd(), '__tests__/.env')})
 
 import {
-    createSecurityToken,
-    createToken,
-    deleteToken,
-    extendExpiration,
-    listTokens,
-    readToken,
-    redeemToken,
-    revokeToken,
-    updateToken,
+    createSecurityToken, createSessionToken, createToken, deleteToken, extendExpiration,
+    listTokens, readToken, redeemToken, revokeToken, updateToken
 } from "../index";
 
 describe('JS SDK', function () {
@@ -44,7 +37,7 @@ describe('JS SDK', function () {
         })
     })
 
-    describe('createSecurity', function () {
+    describe('createSecurityToken', function () {
 
         test('should create security token', async function () {
 
@@ -55,6 +48,22 @@ describe('JS SDK', function () {
 
             expect(token).toBeTruthy()
             expect(token!.refId).toBe(refId)
+            expect(token!.maxUses).toBe(1)
+        })
+    })
+
+    describe('createSessionToken', function () {
+
+        test('should create security token', async function () {
+
+            let refId = 'some-user-id';
+            let ttl = {hours: 2}
+
+            let token = await createSessionToken(refId, ttl)
+
+            expect(token).toBeTruthy()
+            expect(token!.refId).toBe(refId)
+            expect(token!.maxUses).toBeFalsy()
         })
     })
 

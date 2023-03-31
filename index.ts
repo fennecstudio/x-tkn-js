@@ -10,17 +10,31 @@ export async function setup(options: ISetupOptions = {}) {
     if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
 }
 
-export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}): Promise<IToken> {
+export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}, payload?: any): Promise<IToken> {
 
     let props = {
         type: 'security',
         refId,
+        payload,
         expiresAt: addToDate(ttl),
         maxUses: 1
     }
 
     return await post(`/tokens/create`, props)
 }
+
+export async function createSessionToken(refId?: string, ttl: any = {hours: 2}, payload?: any): Promise<IToken> {
+
+    let props = {
+        type: 'session',
+        refId,
+        payload,
+        expiresAt: addToDate(ttl)
+    }
+
+    return await post(`/tokens/create`, props)
+}
+
 
 export async function createToken(props?: ITokenInput): Promise<IToken> {
 
