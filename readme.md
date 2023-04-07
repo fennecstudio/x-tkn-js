@@ -1,12 +1,10 @@
-# x-tkn
+# X-TKN
 
-x-tkn is an API that provides Stateful Web Tokens.
+X-TKN is an API that provides Stateful Web Tokens.
 
 An API Key is required and can be obtained at https://x-tkn.com by signing up for a free account.
 
 # Installation
-
----
 
 ```js
 npm install x-tkn --save
@@ -14,7 +12,7 @@ npm install x-tkn --save
 
 # Setup
 
----
+
 
 The Toknize SDK needs your API Key in order to authenticate correctly.
 This can be done in one of two ways
@@ -26,12 +24,12 @@ X_TKN_API_KEY_ID=YOUR_API_KEY
 ```js
 import {setup} from 'x-tkn'
 
-setup({apiKeyId: YOUR_API_KEY})
+setup(YOUR_API_KEY)
 ```
 
 # The Token Object
 
----
+
 
 - `id`: string -
 The unique identifier for the token.
@@ -92,7 +90,7 @@ The date and time when the token was last modified. This can be used for auditin
 
 # SDK Methods
 
----
+
 
 
 
@@ -151,11 +149,11 @@ has a configurable expiration date.
 **PARAMETERS**
 
 - `refId`: string -
-The id of the user or other object that the token is assigned to
+  Optional. The id of the user or other object that the token is assigned to
 
 
-- `ttl` {days: number, hours: number, minutes: number, seconds: number} -
-The time to live of the token. If not provided, the token will never expire.
+- `ttl`: {days: number, hours: number, minutes: number, seconds: number} -
+  Optional. The time to live of the token. 
 
 **RETURNS**
 
@@ -167,11 +165,78 @@ A `token` object
 import {createSecurityToken} from 'x-tkn'
 
 let refId = "some-user-id"
-let ttl = {days: 1}
+let ttl = {minutes: 15}
 
 let token = await createSecurityToken(refId, ttl)
 ```
 
+
+
+## createSessionToken(refId, ttl)
+
+A session token is a specific token that is assigned to user (or other object), has a configurable expiration date
+and can be redeemed multiple times.  Session tokens can extend their expiration date by using 
+the `extendExpiration` method.
+
+**PARAMETERS**
+
+- `refId`: string -
+  Optional. The id of the user or other object that the token is assigned to
+
+
+- `ttl`: {days: number, hours: number, minutes: number, seconds: number} -
+  Optional. The additional amount time before the token expires.
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
+
+```js
+
+import {createSessionToken} from 'x-tkn'
+
+let refId = "some-user-id"
+let ttl = {hours: 2}
+
+let token = await createSessionToken(refId, ttl)
+```
+
+
+## createShortCode(refId, ttl)
+
+A short code is a 6-8 digit code that is assigned to a security token. 
+The short code can be used to redeem the security token.  
+It is commonly used for 2FA or device authentication workflows.  
+A short code token can be read and reedemed like any other token.  
+When redeeming the short code token, the generated short code is used as the `shortCode` parameter in `redeemToken(tokenId, shortCode)`
+
+**PARAMETERS**
+
+- `refId`: string -
+  Optional. The id of the user or other object that the token is assigned to
+
+
+- `ttl`: {days: number, hours: number, minutes: number, seconds: number} -
+  Optional. The additional amount time before the token expires.
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
+
+```js
+
+import {createShortCode} from 'x-tkn'
+
+let refId = "some-user-id"
+let ttl = {hours: 2}
+
+let token = await createShortCode(refId, ttl)
+let shortCode = token.shortCode
+```
 
 
 ## deleteToken(tokenId)
@@ -195,18 +260,21 @@ await deleteToken('some-token-id')
 
 
 
-## readToken(tokenId)
-The `readToken` method returns a `token` object for the specified token id.  
-- If the token has limited uses, this method will NOT increment the token's use count.
+## extendExpiration(tokenId, ttl)
+This method extends
 
 **PARAMETERS**
 
 - `tokenId`: string -
   The unique identifier of the token to delete
 
+
+- `ttl`: {days: number, hours: number, minutes: number, seconds: number} -
+  The time to live of the token. 
+
 **RETURNS**
 
-A 'token' object
+A `token` object
 
 **EXAMPLE**
 
@@ -218,17 +286,44 @@ let token = await readToken('some-token-id')
 
 
 
-## redeemToken(tokenId)
-The `redeemToken` method returns a `token` object for the specified token id and is used for limited use tokens.
-Calling this method will increment the token's `use` count.
-- If the token is expired, it will return `null`.
-- If the token has reached it's maximum uses, it will return `null`.
-- If the token has been revoked, it will return `null`.
+## readToken(tokenId)
+The `readToken` method returns a `token` object for the specified token id.  
+- If the token has limited uses, this method will NOT increment the token's use count.
 
 **PARAMETERS**
 
 - `tokenId`: string -
   The unique identifier of the token to delete
+
+**RETURNS**
+
+A `token` object
+
+**EXAMPLE**
+
+```js
+import {readToken} from 'x-tkn'
+
+let token = await readToken('some-token-id')
+```
+
+
+
+## redeemToken(tokenId, shortCode)
+The `redeemToken` method returns a `token` object for the specified token id and is used for limited use tokens.
+Calling this method will increment the token's `use` count.
+- If the token is expired, it will return `null`.
+- If the token has reached it's maximum uses, it will return `null`.
+- If the token has been revoked, it will return `null`.
+- If the short code is provided but does not match the one assigned to the token, it will return `null`.
+
+**PARAMETERS**
+
+- `tokenId`: string -
+  The unique identifier of the token to delete
+
+- `shortCode`: string -
+  Optional. A 6-8 digit code that is used to further validate the token.
 
 **RETURNS**
 

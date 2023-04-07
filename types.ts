@@ -12,6 +12,7 @@ export interface IToken {
     uses?: number
     maxUses?: number
     expiresAt?: Date
+    shortCode?: string;
     isRevoked?: boolean
     isEncrypted?: boolean
     isActive?: boolean

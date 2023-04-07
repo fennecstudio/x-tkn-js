@@ -2,8 +2,8 @@ import path from 'path'
 
 require('dotenv').config({path: path.resolve(process.cwd(), '../.env')})
 import {describe, jest} from "@jest/globals";
-import {createToken, createSecurityToken, createSessionToken, deleteToken, readToken, redeemToken, revokeToken, listTokens} from 'x-tkn'
-// import {createToken, createSecurityToken, createSessionToken, deleteToken, readToken, redeemToken, revokeToken, listTokens} from '../../dist'
+import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, listTokens} from 'x-tkn'
+// import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, listTokens} from '../../dist'
 
 describe('sdk', () => {
 
@@ -36,6 +36,17 @@ describe('sdk', () => {
         const token = await createSessionToken(refId, ttl);
 
         expect(token).toBeTruthy();
+    });
+
+    it('should create short code', async () => {
+
+        let refId = 'some-ref-id';
+        let ttl = {hours: 2}
+
+        const token = await createShortCode(refId, ttl);
+
+        expect(token).toBeTruthy();
+        expect(token?.shortCode).toBeTruthy();
     });
 
     it('should read token', async () => {

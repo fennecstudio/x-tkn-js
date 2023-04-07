@@ -1,13 +1,12 @@
 import axios from "axios";
-import {ISetupOptions, IToken, ITokenInput} from "./types";
+import {IToken, ITokenInput} from "./types";
 
 let API_URL = 'https://api.x-tkn.com'
 let API_KEY_ID = findApiKey()
 
-export async function setup(options: ISetupOptions = {}) {
+export async function setup(apiKeyId?: string) {
 
-    if (options.apiUrl) API_URL = options.apiUrl;
-    if (options.apiKeyId) API_KEY_ID = options.apiKeyId;
+    if (apiKeyId) API_URL = apiKeyId;
 }
 
 export async function createSecurityToken(refId?: string, ttl: any = {hours: 2}, payload?: any): Promise<IToken> {
@@ -35,6 +34,18 @@ export async function createSessionToken(refId?: string, ttl: any = {hours: 2}, 
     return await post(`/tokens/create`, props)
 }
 
+export async function createShortCode(refId?: string, ttl: any = {hours: 2}, payload?: any): Promise<IToken> {
+
+    let props = {
+        type: 'short-code',
+        refId,
+        payload,
+        expiresAt: addToDate(ttl),
+        shortCode: true
+    }
+
+    return await post(`/tokens/create`, props)
+}
 
 export async function createToken(props?: ITokenInput): Promise<IToken> {
 
@@ -75,16 +86,14 @@ export async function revokeToken(tokenId: string): Promise<IToken | null> {
     return await patch(`/tokens/${tokenId}/revoke`)
 }
 
-/*
-export async function revokeTokens(where: any): Promise<any | null> {
+export async function revokeTokens(where: any): Promise<IToken[]> {
 
     if (!where) return []
 
     return await post(`/tokens/revoke`, where)
 }
-*/
 
-export async function updateToken(tokenId: string, updates = {}): Promise<any | null> {
+export async function updateToken(tokenId: string, updates = {}): Promise<IToken | null> {
 
     return await patch(`/tokens/${tokenId}/update`, updates)
 }
