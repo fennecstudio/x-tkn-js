@@ -261,7 +261,7 @@ await deleteToken('some-token-id')
 
 
 ## extendExpiration(tokenId, ttl)
-This method extends
+This method extends the expiration date of a token by the given amount of time.
 
 **PARAMETERS**
 
@@ -279,9 +279,9 @@ A `token` object
 **EXAMPLE**
 
 ```js
-import {readToken} from 'x-tkn'
+import {extendExpiration} from 'x-tkn'
 
-let token = await readToken('some-token-id')
+let token = await extendExpiration('some-token-id', {hours: 2})
 ```
 
 

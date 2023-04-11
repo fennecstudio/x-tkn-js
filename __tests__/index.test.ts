@@ -4,8 +4,9 @@ require('dotenv').config({path: path.resolve(process.cwd(), '__tests__/.env')})
 
 import {
     createSecurityToken, createSessionToken, createToken, deleteToken, extendExpiration,
-    listTokens, readToken, redeemToken, revokeToken, updateToken
+    listTokens, readToken, redeemToken, revokeToken, revokeTokens, updateToken
 } from "../index";
+import {IToken} from "../types";
 
 describe('JS SDK', function () {
 
@@ -190,6 +191,41 @@ describe('JS SDK', function () {
             let token = await revokeToken()
 
             expect(token).toBe(null)
+        })
+    })
+
+    describe('revokeTokens', function () {
+
+        test('should revoke tokens by type', async function () {
+
+            let type = 'test-' + (new Date()).getTime()
+            await createToken({type})
+            await createToken({type})
+
+            let {tokens} = await revokeTokens({type});
+
+            expect(tokens).toBeTruthy()
+            expect(tokens).toHaveLength(2)
+            for (let token of tokens) {
+                expect(token?.type).toBe(type)
+                expect(token?.isRevoked).toBeTruthy()
+            }
+        })
+
+        test('should revoke tokens by type', async function () {
+
+            let refId = 'test-' + (new Date()).getTime()
+            await createToken({type:'test', refId})
+            await createToken({type:'test', refId})
+
+            let {tokens} = await revokeTokens({refId});
+
+            expect(tokens).toBeTruthy()
+            expect(tokens).toHaveLength(2)
+            for (let token of tokens) {
+                expect(token?.refId).toBe(refId)
+                expect(token?.isRevoked).toBeTruthy()
+            }
         })
     })
 

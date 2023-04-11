@@ -2,8 +2,8 @@ import path from 'path'
 
 require('dotenv').config({path: path.resolve(process.cwd(), '../.env')})
 import {describe, jest} from "@jest/globals";
-import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, listTokens} from 'x-tkn'
-// import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, listTokens} from '../../dist'
+import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens} from 'x-tkn'
+// import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens} from '../../dist'
 
 describe('sdk', () => {
 
@@ -133,4 +133,42 @@ describe('sdk', () => {
         expect(actualCount).toBe(count)
         expect(count).toBe(1)
     });
+
+    it('should revoke token', async function () {
+
+        let source = await createToken({type: 'test'})
+
+        let token = await revokeToken(source.id);
+
+        expect(token).toBeTruthy()
+        expect(token?.id).toEqual(source.id)
+        expect(token?.isRevoked).toBeTruthy()
+    })
+
+    it('should revoke tokens', async function () {
+
+        let type = 'test-' + (new Date()).getTime()
+        await createToken({type})
+        await createToken({type})
+
+        let {tokens} = await revokeTokens({type});
+
+        expect(tokens).toBeTruthy()
+        expect(tokens).toHaveLength(2)
+        for (let token of tokens) {
+            expect(token?.isRevoked).toBeTruthy()
+        }
+    })
+
+    it('should update a token', async function () {
+
+        let token = await createToken({type: 'test'})
+
+        let updated = await updateToken(token.id, {type: 'test2'})
+
+        expect(token).toBeTruthy()
+        expect(updated).toBeTruthy()
+        expect(updated?.type).toBe('test2')
+    })
+
 })

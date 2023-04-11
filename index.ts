@@ -76,9 +76,12 @@ export async function readToken(tokenId: string): Promise<IToken | null> {
     return await get(`/tokens/${tokenId}/read`)
 }
 
-export async function redeemToken(tokenId: string): Promise<IToken | null> {
+export async function redeemToken(tokenId: string, shortCode?: string): Promise<IToken | null> {
 
-    return await patch(`/tokens/${tokenId}/redeem`)
+    let data = {} as any
+    if (shortCode) data.shortCode = shortCode
+
+    return await patch(`/tokens/${tokenId}/redeem`, data)
 }
 
 export async function revokeToken(tokenId: string): Promise<IToken | null> {
@@ -86,11 +89,11 @@ export async function revokeToken(tokenId: string): Promise<IToken | null> {
     return await patch(`/tokens/${tokenId}/revoke`)
 }
 
-export async function revokeTokens(where: any): Promise<IToken[]> {
+export async function revokeTokens(where: any): Promise<any> {
 
     if (!where) return []
 
-    return await post(`/tokens/revoke`, where)
+    return await patch(`/tokens/revoke`, where)
 }
 
 export async function updateToken(tokenId: string, updates = {}): Promise<IToken | null> {
