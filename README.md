@@ -6,7 +6,7 @@ An API Key is required and can be obtained at https://x-tkn.com by signing up fo
 
 # Installation
 
-```js
+```
 npm install x-tkn --save
 ```
 
@@ -14,7 +14,7 @@ npm install x-tkn --save
 
 
 
-The Toknize SDK needs your API Key in order to authenticate correctly.
+The X-TKN SDK needs your API Key in order to authenticate correctly.
 This can be done in one of two ways
 #### Environment Variable
 ```shell
@@ -68,7 +68,7 @@ Indicates if the token is encrypted at rest.
 
 
 - `isActive`: boolean -
-Indicates if the token is active, which means it has not been revoked, has not expired and has not reached it's maximum uses.
+Indicates if the token is active, which means it has not been revoked, has not expired and has not reached its maximum uses.
 
 
 - `isExpired`: boolean -
@@ -209,7 +209,7 @@ let token = await createSessionToken(refId, ttl)
 A short code is a 6-8 digit code that is assigned to a security token. 
 The short code can be used to redeem the security token.  
 It is commonly used for 2FA or device authentication workflows.  
-A short code token can be read and reedemed like any other token.  
+A short code token can be read and redeemed like any other token.  
 When redeeming the short code token, the generated short code is used as the `shortCode` parameter in `redeemToken(tokenId, shortCode)`
 
 **PARAMETERS**
@@ -313,7 +313,7 @@ let token = await readToken('some-token-id')
 The `redeemToken` method returns a `token` object for the specified token id and is used for limited use tokens.
 Calling this method will increment the token's `use` count.
 - If the token is expired, it will return `null`.
-- If the token has reached it's maximum uses, it will return `null`.
+- If the token has reached its maximum uses, it will return `null`.
 - If the token has been revoked, it will return `null`.
 - If the short code is provided but does not match the one assigned to the token, it will return `null`.
 
@@ -340,7 +340,7 @@ let token = await redeemToken('some-token-id')
 
 
 ## revokeToken(tokenId)
-The `revokeToken` method explicity revokes a token ensuring that any future attempts to redeem it will fail.
+The `revokeToken` method explicit revokes a token ensuring that any future attempts to redeem it will fail.
 
 **PARAMETERS**
 
