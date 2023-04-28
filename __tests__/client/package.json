@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "x-tkn": "^1.5.1"
+    "x-tkn": "^1.6.0"
   },
   "devDependencies": {
     "dotenv": "^16.0.3"

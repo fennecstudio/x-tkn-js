@@ -1,4 +1,4 @@
-import axios from "axios";
+import * as https from 'https';
 import {IToken, ITokenInput} from "./types";
 
 let API_URL = 'https://api.x-tkn.com'
@@ -105,50 +105,70 @@ export async function updateToken(tokenId: string, updates = {}): Promise<IToken
 
 async function del(url: string) {
     try {
-        let {data} = await axios.delete(`${API_URL}${url}`, config())
-
+        let {data} = await request('DELETE', `${API_URL}${url}`)
         return sanitize(data);
-
     } catch (err) {
-
         handleError(err)
     }
 }
 
 async function get(url: string) {
     try {
-        let {data} = await axios.get(`${API_URL}${url}`, config())
-
+        let {data} = await request('GET', `${API_URL}${url}`)
         return sanitize(data);
-
     } catch (err) {
-
         handleError(err)
     }
 }
 
 async function patch(url: string, props?: unknown) {
     try {
-        let {data} = await axios.patch(`${API_URL}${url}`, props, config())
-
+        let {data} = await request('PATCH', `${API_URL}${url}`, props)
         return sanitize(data);
-
     } catch (err) {
-
         handleError(err)
     }
 }
 
 async function post(url: string, props?: unknown) {
     try {
-        let {data} = await axios.post(`${API_URL}${url}`, props, config())
-
+        let {data} = await request('POST', `${API_URL}${url}`, props)
         return sanitize(data);
-
     } catch (err) {
-
         handleError(err)
     }
+}
+
+function request(method: string, url: string, data?: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+        const parsedUrl = new URL(url);
+        const postData = data && JSON.stringify(data);
+        const options = {
+            hostname: parsedUrl.hostname,
+            port: parsedUrl.port,
+            path: parsedUrl.pathname,
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': postData?.length || 0,
+                'Authorization': API_KEY_ID
+            },
+        };
+        const req = https.request(options, (res) => {
+            res.setEncoding('utf8');
+            let responseBody = '';
+            res.on('data', (chunk) => responseBody += chunk);
+            res.on('end', () => {
+                resolve({
+                    statusCode: res.statusCode,
+                    data: parseJSON(responseBody),
+                });
+            });
+        });
+        req.on('error', (err) => reject(err));
+        if (postData) req.write(postData);
+        req.end();
+    });
 }
 
 function sanitize(data?: any) {
@@ -157,9 +177,23 @@ function sanitize(data?: any) {
     return data;
 }
 
-function config() {
+function parseJSON(input: any) {
+    try {
+        return isJSON(input) ? JSON.parse(input) : input;
+    } catch (err) {
+        return input
+    }
+}
 
-    return {headers: {authorization: API_KEY_ID}}
+function isJSON(str: any) {
+    if (!str) return false
+    if (typeof str !== 'string') return false
+    const firstChar = str.charAt(0);
+    const lastChar = str.charAt(str.length - 1);
+    return (
+        (firstChar === '{' && lastChar === '}') ||
+        (firstChar === '[' && lastChar === ']')
+    );
 }
 
 function handleError(err: any) {

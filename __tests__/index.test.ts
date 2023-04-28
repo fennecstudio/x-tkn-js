@@ -6,7 +6,6 @@ import {
     createSecurityToken, createSessionToken, createToken, deleteToken, extendExpiration,
     listTokens, readToken, redeemToken, revokeToken, revokeTokens, updateToken
 } from "../index";
-import {IToken} from "../types";
 
 describe('JS SDK', function () {
 
@@ -33,7 +32,7 @@ describe('JS SDK', function () {
                 expect(token).toBeFalsy()
             } catch (err: any) {
 
-                expect(err.message).toBe('Missing or invalid token fields')
+                expect(err.message).toContain('Missing or invalid token fields')
             }
         })
     })
