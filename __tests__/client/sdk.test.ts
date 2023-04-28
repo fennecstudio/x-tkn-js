@@ -2,12 +2,14 @@ import path from 'path'
 
 require('dotenv').config({path: path.resolve(process.cwd(), '../.env')})
 import {describe, jest} from "@jest/globals";
-// import {
-//     createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens
-// } from 'x-tkn'
 import {
-    createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens
-} from '../../dist'
+    createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken,
+    revokeToken, revokeTokens, updateToken, listTokens
+} from 'x-tkn'
+// import {
+//     createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken,
+//     revokeToken, revokeTokens, updateToken, listTokens
+// } from '../../dist'
 
 describe('sdk', () => {
 
