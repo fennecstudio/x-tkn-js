@@ -2,8 +2,12 @@ import path from 'path'
 
 require('dotenv').config({path: path.resolve(process.cwd(), '../.env')})
 import {describe, jest} from "@jest/globals";
-import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens} from 'x-tkn'
-// import {createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens} from '../../dist'
+// import {
+//     createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens
+// } from 'x-tkn'
+import {
+    createToken, createSecurityToken, createSessionToken, createShortCode, deleteToken, readToken, redeemToken, revokeToken, revokeTokens, updateToken, listTokens
+} from '../../dist'
 
 describe('sdk', () => {
 
@@ -32,10 +36,16 @@ describe('sdk', () => {
 
         let refId = 'some-user-id';
         let ttl = {hours: 2}
+        let payload = {some: 'payload'}
+        let type = 'some-type'
 
-        const token = await createSessionToken(refId, ttl);
+        const token = await createSessionToken(refId, ttl, payload, type);
 
         expect(token).toBeTruthy();
+        expect(token!.refId).toBe(refId)
+        expect(token!.payload).toEqual(payload)
+        expect(token!.type).toEqual(type)
+        expect(token!.maxUses).toBeFalsy()
     });
 
     it('should create short code', async () => {

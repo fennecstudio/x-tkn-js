@@ -22,10 +22,10 @@ export async function createSecurityToken(refId?: string, ttl: any = {hours: 2},
     return await post(`/tokens/create`, props)
 }
 
-export async function createSessionToken(refId?: string, ttl: any = {hours: 2}, payload?: any): Promise<IToken> {
+export async function createSessionToken(refId?: string, ttl: any = {hours: 2}, payload?: any, type: string = 'session'): Promise<IToken> {
 
     let props = {
-        type: 'session',
+        type,
         refId,
         payload,
         expiresAt: addToDate(ttl)

@@ -54,7 +54,7 @@ describe('JS SDK', function () {
 
     describe('createSessionToken', function () {
 
-        test('should create security token', async function () {
+        test('should create session token', async function () {
 
             let refId = 'some-user-id';
             let ttl = {hours: 2}
@@ -65,6 +65,23 @@ describe('JS SDK', function () {
             expect(token!.refId).toBe(refId)
             expect(token!.maxUses).toBeFalsy()
         })
+
+        test('should create session token with payload and custom type', async function () {
+
+            let refId = 'some-user-id';
+            let ttl = {hours: 2}
+            let payload = {hello: 'world'}
+            let type = 'custom-type'
+
+            let token = await createSessionToken(refId, ttl, payload, type)
+
+            expect(token).toBeTruthy()
+            expect(token!.refId).toBe(refId)
+            expect(token!.payload).toEqual(payload)
+            expect(token!.type).toEqual(type)
+            expect(token!.maxUses).toBeFalsy()
+        })
+
     })
 
     describe('listTokens', function () {
